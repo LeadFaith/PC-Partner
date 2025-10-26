@@ -299,7 +299,7 @@ namespace MateEngine.APIs
     [Serializable]
     public class VeniceChatRequest
     {
-        public string model = "llama-3.3-70b";
+        public string model = "mistral-31-24b";
         public VeniceChatMessage[] messages;
         public float temperature = 0.7f;
         public int max_tokens = 2048;

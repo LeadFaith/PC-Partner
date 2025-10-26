@@ -54,7 +54,7 @@ public class VeniceAIExample : MonoBehaviour
         // Create a chat request
         VeniceChatRequest request = new VeniceChatRequest
         {
-            model = "llama-3.3-70b",
+            model = "mistral-31-24b",
             temperature = 0.7f,
             max_tokens = 150,
             messages = new VeniceChatMessage[]
@@ -92,7 +92,7 @@ public class VeniceAIExample : MonoBehaviour
 
         VeniceChatRequest request = new VeniceChatRequest
         {
-            model = "llama-3.3-70b",
+            model = "mistral-31-24b",
             temperature = 0.7f,
             max_tokens = 200,
             messages = new VeniceChatMessage[]
@@ -220,7 +220,7 @@ public class VeniceAIExample : MonoBehaviour
 
         VeniceChatRequest request = new VeniceChatRequest
         {
-            model = "llama-3.3-70b",
+            model = "mistral-31-24b",
             temperature = 0.8f,
             max_tokens = 300,
             messages = new VeniceChatMessage[]

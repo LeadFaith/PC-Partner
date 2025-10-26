@@ -62,7 +62,7 @@ public class MyAIScript : MonoBehaviour
     {
         var request = new VeniceChatRequest
         {
-            model = "llama-3.3-70b",
+            model = "mistral-31-24b",
             messages = new VeniceChatMessage[]
             {
                 new VeniceChatMessage("user", "Hello, Venice!")
@@ -113,7 +113,7 @@ IEnumerator SendChatCompletion(
 ```csharp
 var request = new VeniceChatRequest
 {
-    model = "llama-3.3-70b",
+    model = "mistral-31-24b",
     temperature = 0.7f,
     max_tokens = 500,
     messages = new VeniceChatMessage[]
@@ -145,7 +145,7 @@ IEnumerator SendChatCompletionStreaming(
 ```csharp
 var request = new VeniceChatRequest
 {
-    model = "llama-3.3-70b",
+    model = "mistral-31-24b",
     messages = new VeniceChatMessage[]
     {
         new VeniceChatMessage("user", "Tell me a story.")
@@ -235,7 +235,7 @@ yield return client.GenerateImage(request,
 ## Available Models
 
 ### Chat Models
-- `llama-3.3-70b` - Meta's Llama 3.3 70B (recommended)
+- `mistral-31-24b` - Mistral 31 24B (recommended)
 - `llama-3.1-405b` - Meta's Llama 3.1 405B
 - `qwen-2.5-72b` - Qwen 2.5 72B
 - And more...
@@ -361,7 +361,7 @@ yield return client.SendChatCompletion(request,
 - Use shorter prompts when possible
 
 ### 5. Model Selection
-- Use `llama-3.3-70b` for general chat (balanced quality/speed)
+- Use `mistral-31-24b` for general chat (balanced quality/speed)
 - Use larger models like `llama-3.1-405b` for complex tasks
 - Test different models to find the best fit for your use case
 
@@ -371,7 +371,7 @@ yield return client.SendChatCompletion(request,
 ```csharp
 var request = new VeniceChatRequest
 {
-    model = "llama-3.3-70b",
+    model = "mistral-31-24b",
     messages = new VeniceChatMessage[]
     {
         new VeniceChatMessage("system", "You are a game character."),
@@ -386,7 +386,7 @@ var request = new VeniceChatRequest
 ```csharp
 var request = new VeniceChatRequest
 {
-    model = "llama-3.3-70b",
+    model = "mistral-31-24b",
     temperature = 0.3f,  // More deterministic
     messages = new VeniceChatMessage[]
     {

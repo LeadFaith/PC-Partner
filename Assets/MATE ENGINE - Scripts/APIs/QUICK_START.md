@@ -57,7 +57,7 @@ public class MyVeniceIntegration : MonoBehaviour
         // Create the request
         var request = new VeniceChatRequest
         {
-            model = "llama-3.3-70b",
+            model = "mistral-31-24b",
             messages = new VeniceChatMessage[]
             {
                 new VeniceChatMessage("user", question)
@@ -90,7 +90,7 @@ IEnumerator TalkToCompanion(string userMessage)
 {
     var request = new VeniceChatRequest
     {
-        model = "llama-3.3-70b",
+        model = "mistral-31-24b",
         temperature = 0.8f,
         messages = new VeniceChatMessage[]
         {
@@ -122,7 +122,7 @@ IEnumerator ContinueConversation(string userInput)
     
     var request = new VeniceChatRequest
     {
-        model = "llama-3.3-70b",
+        model = "mistral-31-24b",
         messages = conversationHistory.ToArray()
     };
     
@@ -145,7 +145,7 @@ IEnumerator ReactToUserAction(string action)
 {
     var request = new VeniceChatRequest
     {
-        model = "llama-3.3-70b",
+        model = "mistral-31-24b",
         temperature = 0.9f,
         max_tokens = 100,
         messages = new VeniceChatMessage[]
@@ -217,7 +217,7 @@ IEnumerator TestVeniceConnection()
 {
     var request = new VeniceChatRequest
     {
-        model = "llama-3.3-70b",
+        model = "mistral-31-24b",
         max_tokens = 50,
         messages = new VeniceChatMessage[]
         {
