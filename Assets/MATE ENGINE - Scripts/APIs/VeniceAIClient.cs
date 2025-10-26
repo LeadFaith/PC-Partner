@@ -324,6 +324,72 @@ namespace MateEngine.APIs
                 }
             }
         }
+
+        /// <summary>
+        /// Generate speech from text using TTS (Text-to-Speech)
+        /// </summary>
+        public IEnumerator GenerateSpeech(VeniceSpeechRequest request, Action<AudioClip> onSuccess, Action<string> onError)
+        {
+            string key = GetApiKey();
+            if (string.IsNullOrEmpty(key))
+            {
+                onError?.Invoke("API key is not set. Set VENICE_API_KEY environment variable or configure in Inspector.");
+                yield break;
+            }
+
+            string url = $"{BASE_URL}/audio/speech";
+            string jsonData = JsonUtility.ToJson(request);
+
+            if (enableDebugLogs)
+                Debug.Log($"[VeniceAI] Generating speech from text");
+
+            using (UnityWebRequest webRequest = new UnityWebRequest(url, "POST"))
+            {
+                byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
+                webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                webRequest.downloadHandler = new DownloadHandlerAudioClip(url, AudioType.MPEG);
+                webRequest.SetRequestHeader("Content-Type", "application/json");
+                webRequest.SetRequestHeader("Authorization", $"Bearer {key}");
+                webRequest.timeout = timeoutSeconds;
+
+                yield return webRequest.SendWebRequest();
+
+                if (webRequest.result == UnityWebRequest.Result.Success)
+                {
+                    try
+                    {
+                        AudioClip audioClip = DownloadHandlerAudioClip.GetContent(webRequest);
+                        if (audioClip != null)
+                        {
+                            if (enableDebugLogs)
+                                Debug.Log($"[VeniceAI] Speech generated successfully");
+                            onSuccess?.Invoke(audioClip);
+                        }
+                        else
+                        {
+                            string errorMsg = "Failed to create audio clip from response";
+                            if (enableDebugLogs)
+                                Debug.LogError($"[VeniceAI] {errorMsg}");
+                            onError?.Invoke(errorMsg);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        string errorMsg = $"Failed to parse audio response: {ex.Message}";
+                        if (enableDebugLogs)
+                            Debug.LogError($"[VeniceAI] {errorMsg}");
+                        onError?.Invoke(errorMsg);
+                    }
+                }
+                else
+                {
+                    string errorMsg = $"Generate speech failed: {webRequest.error}";
+                    if (enableDebugLogs)
+                        Debug.LogError($"[VeniceAI] {errorMsg}");
+                    onError?.Invoke(errorMsg);
+                }
+            }
+        }
     }
 
     #region Request/Response Models
@@ -445,6 +511,16 @@ namespace MateEngine.APIs
     {
         public string url;
         public string b64_json;
+    }
+
+    [Serializable]
+    public class VeniceSpeechRequest
+    {
+        public string input;                    // The text to convert to speech (required)
+        public string model = "PlayDialog";      // Voice model (default: PlayDialog)
+        public string voice = "en-US-Journey-D"; // Voice ID (default: en-US-Journey-D)
+        public float speed = 1.0f;              // Speed of speech (0.25 to 4.0, default: 1.0)
+        public string response_format = "mp3";  // Audio format (mp3, opus, aac, flac, default: mp3)
     }
 
     #endregion

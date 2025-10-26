@@ -7,6 +7,7 @@ A C# HTTP client for integrating Venice AI's REST API into Unity projects. This 
 - ✅ **Chat Completions** - Text generation using state-of-the-art language models
 - ✅ **Streaming Support** - Real-time streaming responses for chat
 - ✅ **Image Generation** - Create images from text prompts
+- ✅ **Text-to-Speech (TTS)** - Convert text to natural-sounding speech
 - ✅ **Embeddings** - Generate text embeddings for semantic search
 - ✅ **Model Listing** - Discover available AI models
 - ✅ **OpenAI Compatible** - Works with OpenAI-compatible endpoints
@@ -251,6 +252,39 @@ yield return client.GenerateImage(request,
 );
 ```
 
+##### GenerateSpeech
+Generate speech from text using TTS (Text-to-Speech).
+
+```csharp
+IEnumerator GenerateSpeech(
+    VeniceSpeechRequest request,
+    Action<AudioClip> onSuccess,
+    Action<string> onError
+)
+```
+
+**Example:**
+```csharp
+var request = new VeniceSpeechRequest
+{
+    input = "Hello! This is Venice AI speaking.",
+    model = "PlayDialog",
+    voice = "en-US-Journey-D",
+    speed = 1.0f,
+    response_format = "mp3"
+};
+
+yield return client.GenerateSpeech(request,
+    audioClip => {
+        // Play the audio clip
+        AudioSource audioSource = GetComponent<AudioSource>();
+        audioSource.clip = audioClip;
+        audioSource.Play();
+    },
+    error => Debug.LogError(error)
+);
+```
+
 ## Available Models
 
 ### Chat Models
@@ -263,6 +297,15 @@ yield return client.GenerateImage(request,
 - `fluently-xl` - High-quality image generation
 - `flux-1.1-pro` - Professional image generation
 - And more...
+
+### Speech Models (TTS)
+- `PlayDialog` - High-quality text-to-speech (default)
+
+### Available Voices
+- `en-US-Journey-D` - US English, expressive voice (default)
+- `en-US-Journey-F` - US English, female voice
+- `en-US-Journey-M` - US English, male voice
+- And more... (check Venice AI docs for full list)
 
 ### Embedding Models
 - `text-embedding-004` - Text embeddings
@@ -315,6 +358,18 @@ public class VeniceEmbeddingRequest
     public string model;           // Embedding model (default: "text-embedding-004")
     public string input;           // Input text (required)
     public string encoding_format; // "float" or "base64" (default: "float")
+}
+```
+
+### VeniceSpeechRequest
+```csharp
+public class VeniceSpeechRequest
+{
+    public string input;           // The text to convert to speech (required)
+    public string model;           // Voice model (default: "PlayDialog")
+    public string voice;           // Voice ID (default: "en-US-Journey-D")
+    public float speed;            // Speed of speech, 0.25 to 4.0 (default: 1.0)
+    public string response_format; // Audio format: mp3, opus, aac, flac (default: "mp3")
 }
 ```
 

@@ -201,6 +201,37 @@ IEnumerator GenerateAccessory(string description)
 }
 ```
 
+### 5. Voice Output for Desktop Companion
+
+```csharp
+IEnumerator SpeakMessage(string message)
+{
+    var request = new VeniceSpeechRequest
+    {
+        input = message,
+        model = "PlayDialog",
+        voice = "en-US-Journey-D",
+        speed = 1.0f,
+        response_format = "mp3"
+    };
+    
+    yield return veniceClient.GenerateSpeech(request,
+        audioClip => {
+            // Play the generated speech
+            AudioSource audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+                audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.clip = audioClip;
+            audioSource.Play();
+        },
+        error => Debug.LogError(error)
+    );
+}
+
+// Usage:
+// StartCoroutine(SpeakMessage("Hello! I'm your desktop companion."));
+```
+
 ## Testing Your Integration
 
 ### Using Unity Inspector
@@ -213,6 +244,7 @@ IEnumerator GenerateAccessory(string description)
    - "Test List Models"
    - "Test Generate Embeddings"
    - "Test Generate Image"
+   - "Test Generate Speech (TTS)"
 4. Check the Console for results
 
 ### Using Code

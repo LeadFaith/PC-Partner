@@ -248,6 +248,43 @@ public class VeniceAIExample : MonoBehaviour
         );
     }
 
+    /// <summary>
+    /// Example: Generate speech from text (TTS)
+    /// </summary>
+    public IEnumerator TestGenerateSpeech()
+    {
+        Debug.Log("[VeniceAIExample] Generating speech from text...");
+
+        VeniceSpeechRequest request = new VeniceSpeechRequest
+        {
+            input = "Hello! This is Venice AI's text to speech system. I can speak in various voices and languages.",
+            model = "PlayDialog",
+            voice = "en-US-Journey-D",
+            speed = 1.0f,
+            response_format = "mp3"
+        };
+
+        yield return veniceClient.GenerateSpeech(
+            request,
+            onSuccess: (audioClip) =>
+            {
+                Debug.Log($"[VeniceAIExample] Speech generated! AudioClip length: {audioClip.length} seconds");
+                // You can now play the audio clip using an AudioSource
+                AudioSource audioSource = GetComponent<AudioSource>();
+                if (audioSource == null)
+                {
+                    audioSource = gameObject.AddComponent<AudioSource>();
+                }
+                audioSource.clip = audioClip;
+                audioSource.Play();
+            },
+            onError: (error) =>
+            {
+                Debug.LogError($"[VeniceAIExample] Speech generation error: {error}");
+            }
+        );
+    }
+
     // You can call these test methods from Unity Inspector buttons or other scripts
     [ContextMenu("Test Chat Completion")]
     public void RunChatTest()
@@ -283,5 +320,11 @@ public class VeniceAIExample : MonoBehaviour
     public void RunConversationTest()
     {
         StartCoroutine(TestConversation());
+    }
+
+    [ContextMenu("Test Generate Speech (TTS)")]
+    public void RunSpeechTest()
+    {
+        StartCoroutine(TestGenerateSpeech());
     }
 }
