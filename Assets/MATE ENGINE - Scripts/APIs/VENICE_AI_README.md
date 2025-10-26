@@ -36,10 +36,25 @@ For detailed instructions, see: https://docs.venice.ai/overview/guides/generatin
 
 ### 2. Setup in Unity
 
+**Option A: Using Environment Variable (Recommended for Security)**
+
+1. Set the `VENICE_API_KEY` environment variable on your system:
+   - **Windows**: `setx VENICE_API_KEY "your-api-key-here"`
+   - **macOS/Linux**: `export VENICE_API_KEY="your-api-key-here"`
+   - **Unity Editor**: Set via system environment or add to shell profile
+2. Create an empty GameObject in your scene (e.g., "VeniceAI")
+3. Add the `VeniceAIClient` component to it
+4. The client will automatically use the environment variable
+5. Optionally enable `Enable Debug Logs` for development
+
+**Option B: Using Inspector Field (Less Secure)**
+
 1. Create an empty GameObject in your scene (e.g., "VeniceAI")
 2. Add the `VeniceAIClient` component to it
 3. Paste your API key into the `Api Key` field in the Inspector
 4. Optionally enable `Enable Debug Logs` for development
+
+> ⚠️ **Security Note**: Environment variables are recommended for production builds to avoid exposing API keys in scene files or version control.
 
 ### 3. Basic Usage
 
@@ -92,9 +107,13 @@ Main client class for interacting with Venice AI.
 
 #### Configuration Properties
 
-- `apiKey` (string) - Your Venice AI API key **(required)**
+- `apiKey` (string) - Your Venice AI API key (optional - uses `VENICE_API_KEY` environment variable if not set)
 - `timeoutSeconds` (int) - Request timeout in seconds (default: 30)
 - `enableDebugLogs` (bool) - Enable detailed debug logging (default: false)
+
+#### Environment Variables
+
+- `VENICE_API_KEY` - Set this environment variable to securely provide your API key. The client checks this first before falling back to the Inspector field.
 
 #### Methods
 
@@ -332,9 +351,11 @@ public class VeniceImageData
 ## Best Practices
 
 ### 1. API Key Security
+- **Use environment variables** for production (set `VENICE_API_KEY`)
 - **Never commit API keys** to version control
-- Store keys in Unity's PlayerPrefs or a secure configuration
-- Use environment variables in production builds
+- The client automatically checks the `VENICE_API_KEY` environment variable first
+- Inspector field is available as a fallback for development only
+- Add `*.unity` and scene files to `.gitignore` if they contain API keys
 
 ### 2. Error Handling
 Always implement error handlers:

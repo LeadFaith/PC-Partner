@@ -14,9 +14,10 @@ namespace MateEngine.APIs
     public class VeniceAIClient : MonoBehaviour
     {
         private const string BASE_URL = "https://venice.ai/api/v1";
+        private const string ENV_VAR_API_KEY = "VENICE_API_KEY";
         
         [Header("API Configuration")]
-        [Tooltip("Your Venice AI API key (required)")]
+        [Tooltip("Your Venice AI API key (optional - uses VENICE_API_KEY environment variable if not set)")]
         public string apiKey = "";
         
         [Tooltip("Request timeout in seconds")]
@@ -27,13 +28,40 @@ namespace MateEngine.APIs
         public bool enableDebugLogs = false;
 
         /// <summary>
+        /// Get the API key from environment variable or fallback to Inspector field
+        /// </summary>
+        private string GetApiKey()
+        {
+            // Try to get from environment variable first
+            string envApiKey = Environment.GetEnvironmentVariable(ENV_VAR_API_KEY);
+            
+            if (!string.IsNullOrEmpty(envApiKey))
+            {
+                if (enableDebugLogs)
+                    Debug.Log($"[VeniceAI] Using API key from environment variable {ENV_VAR_API_KEY}");
+                return envApiKey;
+            }
+            
+            // Fallback to Inspector field
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                if (enableDebugLogs)
+                    Debug.Log("[VeniceAI] Using API key from Inspector field");
+                return apiKey;
+            }
+            
+            return null;
+        }
+
+        /// <summary>
         /// Send a chat completion request
         /// </summary>
         public IEnumerator SendChatCompletion(VeniceChatRequest request, Action<VeniceChatResponse> onSuccess, Action<string> onError)
         {
-            if (string.IsNullOrEmpty(apiKey))
+            string key = GetApiKey();
+            if (string.IsNullOrEmpty(key))
             {
-                onError?.Invoke("API key is not set");
+                onError?.Invoke("API key is not set. Set VENICE_API_KEY environment variable or configure in Inspector.");
                 yield break;
             }
 
@@ -49,7 +77,7 @@ namespace MateEngine.APIs
                 webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 webRequest.downloadHandler = new DownloadHandlerBuffer();
                 webRequest.SetRequestHeader("Content-Type", "application/json");
-                webRequest.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+                webRequest.SetRequestHeader("Authorization", $"Bearer {key}");
                 webRequest.timeout = timeoutSeconds;
 
                 yield return webRequest.SendWebRequest();
@@ -86,9 +114,10 @@ namespace MateEngine.APIs
         /// </summary>
         public IEnumerator SendChatCompletionStreaming(VeniceChatRequest request, Action<string> onChunk, Action onComplete, Action<string> onError)
         {
-            if (string.IsNullOrEmpty(apiKey))
+            string key = GetApiKey();
+            if (string.IsNullOrEmpty(key))
             {
-                onError?.Invoke("API key is not set");
+                onError?.Invoke("API key is not set. Set VENICE_API_KEY environment variable or configure in Inspector.");
                 yield break;
             }
 
@@ -105,7 +134,7 @@ namespace MateEngine.APIs
                 webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 webRequest.downloadHandler = new DownloadHandlerBuffer();
                 webRequest.SetRequestHeader("Content-Type", "application/json");
-                webRequest.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+                webRequest.SetRequestHeader("Authorization", $"Bearer {key}");
                 webRequest.timeout = timeoutSeconds;
 
                 yield return webRequest.SendWebRequest();
@@ -138,9 +167,10 @@ namespace MateEngine.APIs
         /// </summary>
         public IEnumerator GetModels(Action<VeniceModelsResponse> onSuccess, Action<string> onError)
         {
-            if (string.IsNullOrEmpty(apiKey))
+            string key = GetApiKey();
+            if (string.IsNullOrEmpty(key))
             {
-                onError?.Invoke("API key is not set");
+                onError?.Invoke("API key is not set. Set VENICE_API_KEY environment variable or configure in Inspector.");
                 yield break;
             }
 
@@ -151,7 +181,7 @@ namespace MateEngine.APIs
 
             using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
             {
-                webRequest.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+                webRequest.SetRequestHeader("Authorization", $"Bearer {key}");
                 webRequest.timeout = timeoutSeconds;
 
                 yield return webRequest.SendWebRequest();
@@ -188,9 +218,10 @@ namespace MateEngine.APIs
         /// </summary>
         public IEnumerator GenerateEmbeddings(VeniceEmbeddingRequest request, Action<VeniceEmbeddingResponse> onSuccess, Action<string> onError)
         {
-            if (string.IsNullOrEmpty(apiKey))
+            string key = GetApiKey();
+            if (string.IsNullOrEmpty(key))
             {
-                onError?.Invoke("API key is not set");
+                onError?.Invoke("API key is not set. Set VENICE_API_KEY environment variable or configure in Inspector.");
                 yield break;
             }
 
@@ -206,7 +237,7 @@ namespace MateEngine.APIs
                 webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 webRequest.downloadHandler = new DownloadHandlerBuffer();
                 webRequest.SetRequestHeader("Content-Type", "application/json");
-                webRequest.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+                webRequest.SetRequestHeader("Authorization", $"Bearer {key}");
                 webRequest.timeout = timeoutSeconds;
 
                 yield return webRequest.SendWebRequest();
@@ -243,9 +274,10 @@ namespace MateEngine.APIs
         /// </summary>
         public IEnumerator GenerateImage(VeniceImageRequest request, Action<VeniceImageResponse> onSuccess, Action<string> onError)
         {
-            if (string.IsNullOrEmpty(apiKey))
+            string key = GetApiKey();
+            if (string.IsNullOrEmpty(key))
             {
-                onError?.Invoke("API key is not set");
+                onError?.Invoke("API key is not set. Set VENICE_API_KEY environment variable or configure in Inspector.");
                 yield break;
             }
 
@@ -261,7 +293,7 @@ namespace MateEngine.APIs
                 webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 webRequest.downloadHandler = new DownloadHandlerBuffer();
                 webRequest.SetRequestHeader("Content-Type", "application/json");
-                webRequest.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+                webRequest.SetRequestHeader("Authorization", $"Bearer {key}");
                 webRequest.timeout = timeoutSeconds;
 
                 yield return webRequest.SendWebRequest();

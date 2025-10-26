@@ -19,9 +19,21 @@ This guide will help you quickly integrate Venice AI into your MateEngine projec
 
 ### Step 2: Configure the API Key
 
+**Recommended: Use Environment Variable**
+
+1. Set the `VENICE_API_KEY` environment variable:
+   - **Windows**: Open Command Prompt and run: `setx VENICE_API_KEY "your-api-key-here"`
+   - **macOS/Linux**: Add to your shell profile: `export VENICE_API_KEY="your-api-key-here"`
+2. Restart Unity Editor to pick up the new environment variable
+3. The client will automatically use this key
+
+**Alternative: Use Inspector (Development Only)**
+
 1. Select the VeniceAI GameObject
 2. In the VeniceAIClient component, paste your API key into the "Api Key" field
-3. (Optional) Check "Enable Debug Logs" to see detailed logging during development
+3. ⚠️ **Warning**: Do not commit scenes with API keys to version control
+
+(Optional) Check "Enable Debug Logs" to see detailed logging during development
 
 ### Step 3: Add Example Script (Optional)
 
@@ -236,8 +248,10 @@ IEnumerator TestVeniceConnection()
 
 ### API Key Issues
 - **Error: "API key is not set"**
-  - Solution: Make sure you pasted your API key in the Inspector
+  - Solution 1: Set the `VENICE_API_KEY` environment variable (recommended)
+  - Solution 2: Paste your API key in the Inspector field
   - Verify there are no extra spaces before/after the key
+  - Restart Unity Editor after setting environment variables
 
 ### Connection Issues
 - **Error: "Request failed"**
