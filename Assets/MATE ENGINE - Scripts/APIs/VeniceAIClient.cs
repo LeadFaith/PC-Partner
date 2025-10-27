@@ -15,6 +15,7 @@ namespace MateEngine.APIs
     {
         private const string BASE_URL = "https://venice.ai/api/v1";
         private const string ENV_VAR_API_KEY = "VENICE_API_KEY";
+        private const float REQUEST_COOLDOWN = 1.0f; // 1 second cooldown between requests
         
         [Header("API Configuration")]
         [Tooltip("Your Venice AI API key (optional - uses VENICE_API_KEY environment variable if not set)")]
@@ -26,6 +27,25 @@ namespace MateEngine.APIs
         [Header("Debug")]
         [Tooltip("Enable debug logging")]
         public bool enableDebugLogs = false;
+
+        // Throttling
+        private float lastRequestTime = -999f;
+
+        /// <summary>
+        /// Check if enough time has passed since the last request (throttling)
+        /// </summary>
+        private IEnumerator WaitForCooldown()
+        {
+            float timeSinceLastRequest = Time.time - lastRequestTime;
+            if (timeSinceLastRequest < REQUEST_COOLDOWN)
+            {
+                float waitTime = REQUEST_COOLDOWN - timeSinceLastRequest;
+                if (enableDebugLogs)
+                    Debug.Log($"[VeniceAI] Throttling: waiting {waitTime:F2}s before next request");
+                yield return new WaitForSeconds(waitTime);
+            }
+            lastRequestTime = Time.time;
+        }
 
         /// <summary>
         /// Get the API key from environment variable or fallback to Inspector field
@@ -58,6 +78,9 @@ namespace MateEngine.APIs
         /// </summary>
         public IEnumerator SendChatCompletion(VeniceChatRequest request, Action<VeniceChatResponse> onSuccess, Action<string> onError)
         {
+            // Throttling check
+            yield return WaitForCooldown();
+            
             string key = GetApiKey();
             if (string.IsNullOrEmpty(key))
             {
@@ -114,6 +137,9 @@ namespace MateEngine.APIs
         /// </summary>
         public IEnumerator SendChatCompletionStreaming(VeniceChatRequest request, Action<string> onChunk, Action onComplete, Action<string> onError)
         {
+            // Throttling check
+            yield return WaitForCooldown();
+            
             string key = GetApiKey();
             if (string.IsNullOrEmpty(key))
             {
@@ -167,6 +193,9 @@ namespace MateEngine.APIs
         /// </summary>
         public IEnumerator GetModels(Action<VeniceModelsResponse> onSuccess, Action<string> onError)
         {
+            // Throttling check
+            yield return WaitForCooldown();
+            
             string key = GetApiKey();
             if (string.IsNullOrEmpty(key))
             {
@@ -218,6 +247,9 @@ namespace MateEngine.APIs
         /// </summary>
         public IEnumerator GenerateEmbeddings(VeniceEmbeddingRequest request, Action<VeniceEmbeddingResponse> onSuccess, Action<string> onError)
         {
+            // Throttling check
+            yield return WaitForCooldown();
+            
             string key = GetApiKey();
             if (string.IsNullOrEmpty(key))
             {
@@ -274,6 +306,9 @@ namespace MateEngine.APIs
         /// </summary>
         public IEnumerator GenerateImage(VeniceImageRequest request, Action<VeniceImageResponse> onSuccess, Action<string> onError)
         {
+            // Throttling check
+            yield return WaitForCooldown();
+            
             string key = GetApiKey();
             if (string.IsNullOrEmpty(key))
             {
@@ -330,6 +365,9 @@ namespace MateEngine.APIs
         /// </summary>
         public IEnumerator GenerateSpeech(VeniceSpeechRequest request, Action<AudioClip> onSuccess, Action<string> onError)
         {
+            // Throttling check
+            yield return WaitForCooldown();
+            
             string key = GetApiKey();
             if (string.IsNullOrEmpty(key))
             {
