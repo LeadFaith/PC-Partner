@@ -397,7 +397,7 @@ namespace MateEngine.APIs
     [Serializable]
     public class VeniceChatRequest
     {
-        public string model = "mistral-31-24b";
+        public string model = "qwen3-235b";
         public VeniceChatMessage[] messages;
         public float temperature = 0.7f;
         public int max_tokens = 2048;
